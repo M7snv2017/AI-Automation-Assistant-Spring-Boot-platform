@@ -9,6 +9,36 @@
 
 ---
 
+## Platform Preview & Screenshots
+
+![Dashboard Overview](docs/screenshots/dashboard.png)
+![AI Chat & Document Parsing](docs/screenshots/chat.png)
+![Visual Calendar & Agenda](docs/screenshots/calendar.png)
+
+*Place your screenshot image files inside the `docs/screenshots/` folder to display them above.*
+
+---
+
+## Key Stakeholders & Target Audience
+
+- **Software Engineers & Developers**: Automated technical workflow execution, database task management, and document analysis.
+- **Project Managers & Executives**: Scheduled recurring performance digests, activity tracking, and milestone email updates.
+- **HR & Recruitment Teams**: Intelligent resume parsing, job role recommendation matching, and candidate communication.
+- **System Administrators & DevOps**: On-premise private AI deployment (Ollama), Docker containerization, and environment isolation.
+
+---
+
+## Recommended Pages & Modules
+
+- **Dashboard (`/dashboard`)**: Overview of active automations, real-time activity metrics, and quick action dispatchers.
+- **AI Chat & Document Assistant (`/chat`)**: Action-driven conversational interface supporting PDF, Word, CSV, and JSON document analysis.
+- **Visual Calendar & Agenda (`/calendar`)**: Color-coded category event calendar with threshold count badges and daily agendas.
+- **Task & Automation Manager (`/tasks`)**: Task tracking with recurrence patterns, priority filters, and advance reminders.
+- **Automation Execution History (`/history`)**: Audit logs and execution records for all AI actions and scheduled tasks.
+- **Platform Settings (`/settings`)**: Configuration for Gmail SMTP credentials, local Ollama AI model selection, and user profiles.
+
+---
+
 ## Overview
 
 **AI Automation Assistant** is a privacy-first, full-stack AI platform that integrates local LLM reasoning (via **Ollama** & `qwen2.5-coder:14b`) into a SaaS workflow automation suite. 
