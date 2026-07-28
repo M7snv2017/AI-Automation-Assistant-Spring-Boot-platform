@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - AI Automation Assistant</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body>
+
+  <div id="app-wrapper">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- App Sidebar -->
+    <aside th:replace="~{fragments/layout :: sidebar('settings')}"></aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Navbar -->
+      <header th:replace="~{fragments/layout :: navbar('Preferences & Configuration')}"></header>
+
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="mb-4">
+          <h4 class="fw-bold mb-1">Preferences & Configuration</h4>
+          <p class="text-secondary small mb-0">Configure your local AI models, interface themes, and service integrations</p>
+        </div>
+
+        <div th:if="${settingsSuccessMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+          <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${settingsSuccessMessage}">Settings updated.</span>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row g-4">
+          <!-- Settings Sidebar Navigation Tabs -->
+          <div class="col-lg-3">
+            <div class="card-saas p-2">
+              <div class="nav flex-column nav-pills" id="settings-tabs" role="tablist">
+                <button class="nav-link active text-start py-2.5 px-3 fw-bold mb-1" id="profile-tab" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button">
+                  <i class="bi bi-person me-2"></i> Profile Settings
+                </button>
+                <button class="nav-link text-start py-2.5 px-3 fw-bold mb-1" id="appearance-tab" data-bs-toggle="pill" data-bs-target="#tab-appearance" type="button">
+                  <i class="bi bi-palette me-2"></i> Appearance
+                </button>
+                <button class="nav-link text-start py-2.5 px-3 fw-bold mb-1" id="ai-tab" data-bs-toggle="pill" data-bs-target="#tab-ai" type="button">
+                  <i class="bi bi-cpu me-2"></i> AI Configuration
+                </button>
+                <button class="nav-link text-start py-2.5 px-3 fw-bold mb-1" id="notifications-tab" data-bs-toggle="pill" data-bs-target="#tab-notifications" type="button">
+                  <i class="bi bi-bell me-2"></i> Notifications
+                </button>
+                <button class="nav-link text-start py-2.5 px-3 fw-bold" id="services-tab" data-bs-toggle="pill" data-bs-target="#tab-services" type="button">
+                  <i class="bi bi-plug me-2"></i> Connected Services
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings Tab Content Panes -->
+          <div class="col-lg-9">
+            <div class="card-saas p-4">
+              <div th:if="${param.updated}" class="alert alert-success p-2 small mb-3">
+                <i class="bi bi-check-circle me-1"></i> Settings saved successfully.
+              </div>
+              <div th:if="${gmailSuccessMessage}" class="alert alert-success p-2 small mb-3">
+                <i class="bi bi-check-circle-fill me-1"></i> <span th:text="${gmailSuccessMessage}">Gmail successfully configured.</span>
+              </div>
+              <div th:if="${testEmailSuccess}" class="alert alert-success p-2 small mb-3">
+                <i class="bi bi-envelope-check me-1"></i> <span th:text="${testEmailSuccess}">Test email sent successfully.</span>
+              </div>
+              <div th:if="${testEmailError}" class="alert alert-danger p-2 small mb-3">
+                <i class="bi bi-exclamation-triangle-fill me-1"></i> <span th:text="${testEmailError}">Failed to send test email.</span>
+              </div>
+
+              <form th:action="@{/settings/update}" action="/settings/update" method="POST">
+                <div class="tab-content" id="settings-tab-content">
+                  
+                  <!-- Profile Pane -->
+                  <div class="tab-pane fade show active" id="tab-profile" role="tabpanel">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Profile Preferences</h5>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Full Name</label>
+                      <input type="text" class="form-control" name="fullName" th:value="${user.fullName}">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Email Address</label>
+                      <input type="email" class="form-control" th:value="${user.email}" readonly disabled>
+                    </div>
+                  </div>
+
+                  <!-- Appearance Pane -->
+                  <div class="tab-pane fade" id="tab-appearance" role="tabpanel">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Appearance & Theme</h5>
+                    <div class="mb-4">
+                      <label class="form-label fw-semibold small mb-2">Interface Theme</label>
+                      <div class="d-flex gap-3">
+                        <button type="button" class="btn btn-outline-primary theme-toggle px-4 py-2">
+                          <i class="bi bi-moon-stars me-2"></i> Toggle Theme Mode
+                        </button>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Display Language</label>
+                      <select class="form-select" name="language">
+                        <option value="en" th:selected="${user.language == 'en'}">English (United States)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- AI Pane -->
+                  <div class="tab-pane fade" id="tab-ai" role="tabpanel">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">AI & LLM Settings</h5>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Default Inference Model</label>
+                      <select class="form-select" name="aiModel">
+                        <option value="qwen2.5-coder:14b" th:selected="${user.aiModel == 'qwen2.5-coder:14b'}">qwen2.5-coder:14b (Default)</option>
+                        <option value="qwen3:8b" th:selected="${user.aiModel == 'qwen3:8b'}">qwen3:8b</option>
+                        <option value="deepseek-coder-v2" th:selected="${user.aiModel == 'deepseek-coder-v2'}">deepseek-coder-v2</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Notifications Pane -->
+                  <div class="tab-pane fade" id="tab-notifications" role="tabpanel">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Notification Preferences</h5>
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="emailAlerts" name="notifyEmail" th:checked="${user.notifyEmail}">
+                      <label class="form-check-label fw-semibold small" for="emailAlerts">Require Email Notification Alerts</label>
+                    </div>
+                    <div class="form-check form-switch mb-3">
+                      <input class="form-check-input" type="checkbox" id="soundAlerts" name="notifyBrowser" th:checked="${user.notifyBrowser}">
+                      <label class="form-check-label fw-semibold small" for="soundAlerts">In-App Browser Alerts</label>
+                    </div>
+                  </div>
+
+                  <!-- Connected Services Pane -->
+                  <div class="tab-pane fade" id="tab-services" role="tabpanel">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">Gmail SMTP Integration</h5>
+                    
+                    <!-- Connection Status Banner -->
+                    <div class="p-3 border rounded mb-4 bg-body-tertiary d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-envelope-check-fill fs-2 text-danger"></i>
+                        <div>
+                          <div class="fw-bold d-flex align-items-center gap-2">
+                            Gmail SMTP Connection
+                            <span th:if="${user.gmailUsername != null && !user.gmailUsername.isEmpty()}" class="badge bg-success-subtle text-success border border-success-subtle">
+                              <i class="bi bi-check-circle-fill me-1"></i> Connected
+                            </span>
+                            <span th:unless="${user.gmailUsername != null && !user.gmailUsername.isEmpty()}" class="badge bg-secondary-subtle text-secondary">
+                              <i class="bi bi-dash-circle me-1"></i> Not Configured
+                            </span>
+                          </div>
+                          <div class="small text-muted" th:if="${user.gmailUsername != null && !user.gmailUsername.isEmpty()}" th:text="'Configured Account: ' + ${user.gmailUsername}">Configured Account: user@gmail.com</div>
+                          <div class="small text-muted" th:unless="${user.gmailUsername != null && !user.gmailUsername.isEmpty()}">Configure your Gmail address and Google App Password below</div>
+                        </div>
+                      </div>
+
+                      <div th:if="${user.gmailUsername != null && !user.gmailUsername.isEmpty()}">
+                        <button type="button" class="btn btn-outline-primary btn-sm px-3 fw-semibold" onclick="triggerTestEmail(this)">
+                          <i class="bi bi-send-fill me-1"></i> Send Test Email
+                        </button>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Gmail Address</label>
+                      <input type="email" class="form-control" name="gmailUsername" th:value="${user.gmailUsername}" placeholder="your.name@gmail.com">
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label fw-semibold small">Google App Password</label>
+                      <input type="password" class="form-control" name="appPassword" placeholder="•••• •••• •••• ••••">
+                      <div class="form-text small">Generate a 16-character Google App Password in your Google Account security settings. App passwords are stored securely using AES encryption.</div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                  <button type="submit" class="btn btn-primary-saas">
+                    <i class="bi bi-save me-1"></i> Save Preferences
+                  </button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script th:src="@{/js/app.js}" src="../js/app.js"></script>
+</body>
+</html>

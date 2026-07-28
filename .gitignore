@@ -1,0 +1,38 @@
+# Maven Target directory
+target/
+*.jar
+*.war
+*.ear
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+
+# Environment & Credentials
+.env
+*.env
+*.pem
+*.key
+*.p12
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# User Uploads / Temp storage
+uploads/
+temp/
+tmp/

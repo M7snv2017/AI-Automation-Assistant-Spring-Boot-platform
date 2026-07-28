@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - AI Automation Assistant</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Custom Style -->
+  <link rel="stylesheet" th:href="@{/css/style.css}" href="../css/style.css">
+</head>
+<body>
+
+  <div id="app-wrapper">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay"></div>
+
+    <!-- App Sidebar -->
+    <aside th:replace="~{fragments/layout :: sidebar('profile')}"></aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Navbar -->
+      <header th:replace="~{fragments/layout :: navbar('User Profile')}"></header>
+
+      <!-- Page Content -->
+      <div class="page-content">
+        <div th:if="${param.passwordChanged}" class="alert alert-success p-2 small mb-3">Password changed successfully!</div>
+        <div th:if="${errorMessage}" class="alert alert-danger p-2 small mb-3" th:text="${errorMessage}"></div>
+
+        <div class="row g-4 max-width-900 mx-auto">
+          <!-- Profile Card -->
+          <div class="col-md-5">
+            <div class="card-saas p-4 text-center">
+              <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center fw-bold fs-2 mb-3 shadow" style="width: 90px; height: 90px;" th:text="${user.fullName != null && !user.fullName.isEmpty() ? #strings.substring(user.fullName, 0, 1).toUpperCase() : 'U'}">
+                JD
+              </div>
+              <h4 class="fw-bold mb-1" id="profile-display-name" th:text="${user.fullName}">John Doe</h4>
+              <p class="text-secondary small mb-3" id="profile-display-email" th:text="${user.email}">john.doe@example.com</p>
+              
+              <div class="d-inline-block badge bg-primary-subtle text-primary border px-3 py-2 fw-bold mb-4" th:text="${user.role}">
+                ROLE_USER
+              </div>
+
+              <div class="border-top pt-3 d-flex justify-content-around text-center">
+                <div>
+                  <div class="fw-bold text-body">Member Since</div>
+                  <div class="small text-muted" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'MMM yyyy') : 'Recently'}">July 2026</div>
+                </div>
+              </div>
+
+              <div class="mt-4">
+                <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                  <i class="bi bi-shield-lock me-1"></i> Change Password
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Details & Security Summary -->
+          <div class="col-md-7">
+            <div class="card-saas p-4 mb-4">
+              <h5 class="fw-bold mb-3 border-bottom pb-2">Account Overview</h5>
+              <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted small">Full Name</dt>
+                <dd class="col-sm-8 fw-semibold" th:text="${user.fullName}">John Doe</dd>
+
+                <dt class="col-sm-4 text-muted small">Email Address</dt>
+                <dd class="col-sm-8 fw-semibold" th:text="${user.email}">john.doe@example.com</dd>
+
+                <dt class="col-sm-4 text-muted small">Role</dt>
+                <dd class="col-sm-8 fw-semibold" th:text="${user.role}">ROLE_USER</dd>
+
+                <dt class="col-sm-4 text-muted small">AI Model</dt>
+                <dd class="col-sm-8 fw-semibold text-primary" th:text="${user.aiModel}">qwen2.5-coder:14b</dd>
+
+                <dt class="col-sm-4 text-muted small">Security</dt>
+                <dd class="col-sm-8 fw-semibold text-success"><i class="bi bi-shield-check me-1"></i> BCrypt Encrypted</dd>
+              </dl>
+            </div>
+
+            <div class="card-saas p-4">
+              <h5 class="fw-bold mb-3 border-bottom pb-2">Active Sessions</h5>
+              <div class="d-flex align-items-center justify-content-between p-3 border rounded bg-body-tertiary">
+                <div class="d-flex align-items-center gap-3">
+                  <i class="bi bi-laptop fs-3 text-primary"></i>
+                  <div>
+                    <div class="fw-bold small">Current Browser Session</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Spring Security Authenticated Session</div>
+                  </div>
+                </div>
+                <span class="badge bg-success-subtle text-success">Active Now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title fw-bold" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form th:action="@{/profile/password}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label fw-semibold small">Current Password</label>
+              <input type="password" class="form-control" name="currentPassword" id="currentPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label fw-semibold small">New Password</label>
+              <input type="password" class="form-control" name="newPassword" id="newPassword" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirmNewPassword" class="form-label fw-semibold small">Confirm New Password</label>
+              <input type="password" class="form-control" name="confirmNewPassword" id="confirmNewPassword" required>
+            </div>
+          </div>
+          <div class="modal-footer border-top">
+            <button type="button" class="btn btn-secondary-saas" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary-saas">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script th:src="@{/js/app.js}" src="../js/app.js"></script>
+</body>
+</html>
