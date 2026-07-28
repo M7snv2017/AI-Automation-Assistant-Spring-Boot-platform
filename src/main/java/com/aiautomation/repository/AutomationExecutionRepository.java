@@ -17,6 +17,8 @@ public interface AutomationExecutionRepository extends JpaRepository<AutomationE
 
     List<AutomationExecution> findByUserOrderByCreatedAtDesc(User user);
 
+    List<AutomationExecution> findByUserAndStatusOrderByCreatedAtDesc(User user, AutomationExecution.Status status);
+
     long countByUserAndStatus(User user, AutomationExecution.Status status);
 
     long countByUserAndStatusAndExecutedAtGreaterThanEqual(User user, AutomationExecution.Status status, LocalDateTime since);

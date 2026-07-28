@@ -918,3 +918,64 @@ body.sidebar-collapsed .app-main {
     font-size: 0.85rem;
   }
 }
+
+/* ==========================================
+   Chat Message Max-Width & Read More / Read Less Truncation
+   ========================================== */
+
+.chat-message-bubble {
+  max-width: 82%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 992px) {
+  .chat-message-bubble {
+    max-width: 720px;
+  }
+}
+
+.chat-message-content {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.chat-collapsible-wrapper {
+  position: relative;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.chat-collapsible-wrapper.collapsed {
+  max-height: 220px;
+  overflow: hidden;
+}
+
+.chat-collapsible-wrapper.collapsed::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to bottom, rgba(248, 249, 250, 0), rgba(248, 249, 250, 0.95));
+  pointer-events: none;
+}
+
+[data-bs-theme="dark"] .chat-collapsible-wrapper.collapsed::after {
+  background: linear-gradient(to bottom, rgba(30, 41, 59, 0), rgba(30, 41, 59, 0.95));
+}
+
+.bg-primary .chat-collapsible-wrapper.collapsed::after {
+  background: linear-gradient(to bottom, rgba(59, 130, 246, 0), rgba(59, 130, 246, 0.95));
+}
+
+.read-toggle-btn {
+  background: none;
+  border: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 4px 0 0 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

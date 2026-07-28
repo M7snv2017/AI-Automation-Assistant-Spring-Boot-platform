@@ -12,6 +12,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initToastContainer();
 });
 
+window.toggleReadMore = function(btn) {
+  const wrapper = btn.previousElementSibling;
+  if (!wrapper) return;
+  const isCollapsed = wrapper.classList.contains('collapsed');
+  if (isCollapsed) {
+    wrapper.classList.remove('collapsed');
+    btn.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Read Less';
+  } else {
+    wrapper.classList.add('collapsed');
+    btn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Read More';
+  }
+};
+
 /* ==========================================
    1. Theme Management (Dark Mode)
    ========================================== */
@@ -651,15 +664,25 @@ function initChatInterface() {
       `;
     }
 
+    const formattedBody = escapeHtml(text).replace(/\n/g, '<br>');
+    let messageBodyHtml = formattedBody;
+    let readMoreBtnHtml = '';
+
+    if (formattedBody.length > 450) {
+      messageBodyHtml = `<div class="chat-collapsible-wrapper collapsed">${formattedBody}</div>`;
+      readMoreBtnHtml = `<button type="button" class="read-toggle-btn text-white-50 mt-1" onclick="toggleReadMore(this)"><i class="bi bi-chevron-down me-1"></i>Read More</button>`;
+    }
+
     userDiv.innerHTML = `
-      <div class="d-inline-block text-start" style="max-width: 80%;">
+      <div class="d-inline-block text-start chat-message-bubble">
         <div class="d-flex align-items-center justify-content-end gap-2 mb-1">
           <span class="small text-muted">${time}</span>
           <span class="fw-bold small text-body">You</span>
         </div>
-        <div class="p-3 rounded-3 bg-primary text-white shadow-sm">
+        <div class="p-3 rounded-3 bg-primary text-white shadow-sm chat-message-content">
           ${attachmentHtml}
-          ${escapeHtml(text).replace(/\n/g, '<br>')}
+          ${messageBodyHtml}
+          ${readMoreBtnHtml}
         </div>
       </div>
     `;
@@ -698,15 +721,24 @@ function initChatInterface() {
       if (parsed && typeof parsed === 'object') {
         textMsg = parsed.message || parsed.content || parsed.response || parsed.text || parsed.answer || rawContent;
       }
+      const formattedText = escapeHtml(textMsg).replace(/\n/g, '<br>');
+      let bodyHtml = formattedText;
+      let readMoreBtn = '';
+      if (formattedText.length > 450) {
+        bodyHtml = `<div class="chat-collapsible-wrapper collapsed">${formattedText}</div>`;
+        readMoreBtn = `<button type="button" class="read-toggle-btn text-primary mt-1" onclick="toggleReadMore(this)"><i class="bi bi-chevron-down me-1"></i>Read More</button>`;
+      }
+
       contentHtml = `
-        <div class="p-3 rounded-3 bg-body-tertiary border text-body shadow-sm">
-          ${escapeHtml(textMsg).replace(/\n/g, '<br>')}
+        <div class="p-3 rounded-3 bg-body-tertiary border text-body shadow-sm chat-message-content">
+          ${bodyHtml}
+          ${readMoreBtn}
         </div>
       `;
     }
 
     aiDiv.innerHTML = `
-      <div class="d-inline-block text-start" style="max-width: 85%;">
+      <div class="d-inline-block text-start chat-message-bubble">
         <div class="d-flex align-items-center gap-2 mb-1">
           <div class="sidebar-brand-icon bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; font-size: 0.75rem;">
             <i class="bi bi-robot"></i>

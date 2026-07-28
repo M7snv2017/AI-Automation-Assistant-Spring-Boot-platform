@@ -34,11 +34,37 @@ public class LLMAgentResponseParser {
             JsonNode node = objectMapper.readTree(cleaned);
             if (node.isObject()) {
                 ObjectNode obj = (ObjectNode) node;
-                if (obj.has("action") || obj.has("tasks") || obj.has("recipient")) {
+                if (obj.has("action") || obj.has("tasks") || obj.has("recipient") || obj.has("subject")) {
                     obj.put("type", "confirmation");
-                    if (!obj.has("message")) {
-                        obj.put("message", "I have prepared the action for your approval.");
+                    if (!obj.has("action")) {
+                        obj.put("action", "send_email");
                     }
+                    if (!obj.has("message")) {
+                        obj.put("message", "I analyzed your request and prepared the action for your approval.");
+                    }
+
+                    // Ensure "data" object exists and contains all parameters
+                    ObjectNode dataObj;
+                    if (obj.has("data") && obj.get("data").isObject()) {
+                        dataObj = (ObjectNode) obj.get("data");
+                    } else {
+                        dataObj = objectMapper.createObjectNode();
+                        obj.set("data", dataObj);
+                    }
+
+                    // Promote top-level parameters to dataObj if missing in dataObj
+                    if (obj.has("recipient") && !dataObj.has("recipient")) dataObj.set("recipient", obj.get("recipient"));
+                    if (obj.has("subject") && !dataObj.has("subject")) dataObj.set("subject", obj.get("subject"));
+                    if (obj.has("body") && !dataObj.has("body")) dataObj.set("body", obj.get("body"));
+                    if (obj.has("tasks") && !dataObj.has("tasks")) dataObj.set("tasks", obj.get("tasks"));
+
+                    // Guarantee non-empty subject for send_email
+                    if ("send_email".equalsIgnoreCase(obj.path("action").asText())) {
+                        if (!dataObj.has("subject") || dataObj.get("subject").asText().isBlank()) {
+                            dataObj.put("subject", "Job Recommendations Based on Your CV");
+                        }
+                    }
+
                     return objectMapper.writeValueAsString(obj);
                 }
 
@@ -92,6 +118,10 @@ public class LLMAgentResponseParser {
                     subject = raw.substring(subjIndex + 8, lineEnd).replace("---", "").trim();
                     body = raw.substring(lineEnd + 1).replace("---", "").trim();
                 }
+            }
+
+            if (subject == null || subject.isBlank() || subject.toLowerCase().contains("notification")) {
+                subject = "Job Recommendations Based on Your CV";
             }
 
             // Remove any trailing tutorial advice like "Feel free to customize..."

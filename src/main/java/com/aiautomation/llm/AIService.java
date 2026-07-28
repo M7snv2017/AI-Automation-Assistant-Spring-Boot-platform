@@ -72,13 +72,26 @@ public class AIService {
         String rawResponse = llmService.generateResponse(session.getSelectedModel(), messages);
         String jsonResponse = responseParser.sanitizeAndValidateJsonResponse(rawResponse);
 
-        // Save AI message
+        // Save AI message shell to get UUID
         ChatMessage aiMsg = ChatMessage.builder()
                 .session(session)
                 .sender("AI")
                 .content(jsonResponse)
                 .build();
         chatMessageRepository.save(aiMsg);
+
+        // Inject messageId into jsonResponse for exact action card binding
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode node = mapper.readTree(jsonResponse);
+            if (node.isObject()) {
+                com.fasterxml.jackson.databind.node.ObjectNode obj = (com.fasterxml.jackson.databind.node.ObjectNode) node;
+                obj.put("messageId", aiMsg.getId().toString());
+                jsonResponse = mapper.writeValueAsString(obj);
+                aiMsg.setContent(jsonResponse);
+                chatMessageRepository.save(aiMsg);
+            }
+        } catch (Exception ignored) {}
 
         // Record AutomationExecution if proposal requires confirmation
         try {

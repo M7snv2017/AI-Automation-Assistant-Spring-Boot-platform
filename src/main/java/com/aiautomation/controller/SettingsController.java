@@ -69,10 +69,10 @@ public class SettingsController {
                 dto.getAppPassword()
         );
 
-        if (dto.getGmailUsername() != null && !dto.getGmailUsername().isBlank()) {
+        if (dto.getAppPassword() != null && !dto.getAppPassword().isBlank()) {
             redirectAttributes.addFlashAttribute("gmailSuccessMessage", "Gmail credentials updated successfully.");
         }
-        redirectAttributes.addFlashAttribute("settingsSuccessMessage", "AI Configuration and preferences updated successfully.");
+        redirectAttributes.addFlashAttribute("settingsSuccessMessage", "Preferences and configurations updated successfully.");
 
         return "redirect:/settings?updated=true";
     }

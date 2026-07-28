@@ -284,11 +284,20 @@ public class ChatController {
 
         String aiResponse = aiService.processUserMessageWithDisplay(user, session, dto.getPrompt(), displayPrompt);
 
+        String messageId = null;
+        try {
+            com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(aiResponse);
+            if (node.has("messageId")) {
+                messageId = node.get("messageId").asText();
+            }
+        } catch (Exception ignored) {}
+
         Map<String, Object> result = new HashMap<>();
         result.put("status", "success");
         result.put("sessionId", session.getId().toString());
         result.put("userPrompt", displayPrompt);
         result.put("aiResponse", aiResponse);
+        result.put("messageId", messageId);
 
         return ResponseEntity.ok(result);
     }
@@ -309,18 +318,14 @@ public class ChatController {
                     msg = chatMessageRepository.findById(UUID.fromString(messageIdStr)).orElse(null);
                 } catch (Exception ignored) {}
             }
+
             if (msg == null) {
-                // Fallback: Find recent AI message in active session
-                List<ChatSession> sessions = chatSessionRepository.findByUserOrderByUpdatedAtDesc(user);
-                if (!sessions.isEmpty()) {
-                    List<ChatMessage> messages = chatMessageRepository.findBySessionOrderByTimestampAsc(sessions.get(0));
-                    for (int i = messages.size() - 1; i >= 0; i--) {
-                        ChatMessage candidate = messages.get(i);
-                        if ("AI".equalsIgnoreCase(candidate.getSender()) && candidate.getContent() != null && candidate.getContent().contains("\"type\":\"confirmation\"")) {
-                            msg = candidate;
-                            break;
-                        }
-                    }
+                List<AutomationExecution> pendingList = automationExecutionRepository.findByUserAndStatusOrderByCreatedAtDesc(user, AutomationExecution.Status.PENDING_CONFIRMATION);
+                if (!pendingList.isEmpty()) {
+                    AutomationExecution exec = pendingList.get(0);
+                    try {
+                        msg = chatMessageRepository.findById(UUID.fromString(exec.getMessageId())).orElse(null);
+                    } catch (Exception ignored) {}
                 }
             }
 
@@ -502,41 +507,13 @@ public class ChatController {
                                      .replace("[User Name]", userName);
                 }
 
-                String cardMessageText = dto.getMessage();
-
                 java.time.LocalDateTime due = parseDueDate(dto.getData().get("dueDate"));
                 if (due == null) due = parseDueDate(dto.getData().get("date"));
                 if (due == null) due = parseDueDate(dto.getData().get("time"));
-                if (due == null) due = parseDueDate(dto.getData().get("message"));
-                if (due == null && cardMessageText != null) due = parseDueDate(cardMessageText);
 
-                boolean hasScheduleIntent = dto.getData().get("dueDate") != null || dto.getData().get("date") != null || dto.getData().get("time") != null;
+                boolean isFutureScheduled = (due != null && due.isAfter(java.time.LocalDateTime.now().plusSeconds(10)));
 
-                if (!hasScheduleIntent && cardMessageText != null) {
-                    String cLower = cardMessageText.toLowerCase();
-                    if (cLower.contains("schedule") || cLower.contains("scheduled") || cLower.contains("after") || cLower.contains("in ") || cLower.contains("at ")) {
-                        hasScheduleIntent = true;
-                    }
-                }
-
-                // Fallback: check if the AI message in DB contains scheduling keywords
-                if (!hasScheduleIntent && dto.getMessageId() != null) {
-                    try {
-                        ChatMessage msgObj = chatMessageRepository.findById(UUID.fromString(dto.getMessageId())).orElse(null);
-                        if (msgObj != null && msgObj.getContent() != null) {
-                            String cLower = msgObj.getContent().toLowerCase();
-                            if (cLower.contains("schedule") || cLower.contains("scheduled") || cLower.contains("after") || cLower.contains("in ") || cLower.contains("at ")) {
-                                hasScheduleIntent = true;
-                                if (due == null) due = parseDueDate(msgObj.getContent());
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }
-
-                if (hasScheduleIntent || (due != null && due.isAfter(java.time.LocalDateTime.now()))) {
-                    if (due == null || due.isBefore(java.time.LocalDateTime.now())) {
-                        due = java.time.LocalDateTime.now().plusMinutes(1);
-                    }
+                if (isFutureScheduled) {
                     String taskDesc = "Recipient: " + recipient + "\nSubject: " + (subject != null ? subject : "") + "\nBody: " + (body != null ? body : "");
                     taskService.createTask(user, "Scheduled Email: " + (subject != null ? subject : "Notification"), taskDesc, "Email Management", due);
                     
@@ -546,7 +523,7 @@ public class ChatController {
                     updateChatMessageActionStatus(user, dto.getMessageId(), "executed", msgText);
                 } else {
                     emailService.sendEmail(user, recipient, subject, body);
-                    String msgText = "Executed successfully: Email sent to " + recipient;
+                    String msgText = "Executed successfully: Email sent immediately to " + recipient;
                     result.put("status", "success");
                     result.put("message", msgText);
                     updateChatMessageActionStatus(user, dto.getMessageId(), "executed", msgText);

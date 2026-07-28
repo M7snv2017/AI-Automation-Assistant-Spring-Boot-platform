@@ -48,6 +48,14 @@ public class PromptBuilder {
                 RECURRENCE PATTERNS: "ONCE" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY" | "WEEKDAYS"
                 REMINDER ADVANCE NOTIFICATIONS: "NONE" | "MINUTES_30" | "HOURS_1" | "DAYS_1" | "WEEKS_1"
 
+                EXPLICIT JOB RECOMMENDATION EMAIL RULES:
+                When the user asks you to email them job recommendations based on their CV or resume (e.g. "send to my email an email to request the jobs u recommend it to me", "email me job recommendations based on CV"):
+                1. RECIPIENT: ALWAYS set recipient to "%s".
+                2. SUBJECT: ALWAYS set subject to "Job Recommendations Based on Your CV".
+                3. EMAIL PERSPECTIVE: The email MUST be written from YOU (AI Automation Agent) to THE USER (%s).
+                4. NEVER write a cover letter, NEVER say "Dear Hiring Manager", and NEVER say "I am applying for".
+                5. The body MUST start with "Dear %s," and list 3 specific job roles with company names, descriptions, and required skills based on their CV.
+
                 CRITICAL COMMUNICATION & JSON OUTPUT RULES:
                 1. You must ALWAYS respond in valid, parseable JSON format.
                 2. NEVER output markdown code block fences (like ```json or ```) or plain text before/after the JSON. Output ONLY raw valid JSON.
@@ -94,11 +102,11 @@ public class PromptBuilder {
                 {
                   "type": "confirmation",
                   "action": "send_email",
-                  "message": "I analyzed the CV and drafted an email with job role recommendations (Laravel Developer, Backend Engineer, Web Developer). Please review and confirm to dispatch the email.",
+                  "message": "I analyzed your CV and prepared an email with job role recommendations (Laravel Developer, Cloud Engineer, Software Developer). Please review and confirm to send.",
                   "data": {
                     "recipient": "%s",
                     "subject": "Job Recommendations Based on Your CV",
-                    "body": "Dear Candidate,\\n\\nAfter reviewing your CV, here are recommended job roles matching your expertise:\\n1. Laravel Developer\\n2. Junior Backend Engineer\\n3. Web Developer\\n\\nBest regards,\\nAI Automation Agent"
+                    "body": "Dear Abdulmohsen,\\n\\nBased on your resume, here are recommended job roles matching your expertise in backend development (Laravel, Spring Boot, FastAPI):\\n\\n1. Laravel Backend Developer - At Riva-Resortana\\nThis role involves developing backend components using Laravel framework to support scalable software solutions.\\n\\n2. Cloud Engineer - At Tech Company\\nResponsible for designing, implementing, and managing AWS cloud infrastructure and containerized services.\\n\\n3. Software Developer - At Software House\\nVersatile backend development utilizing modern frameworks and database optimization.\\n\\nPlease let me know if you would like me to dispatch formal applications for any of these positions.\\n\\nBest regards,\\nAI Automation Agent"
                   }
                 }
 
@@ -127,6 +135,6 @@ public class PromptBuilder {
                     "description": "Scheduled via AI Agent for tomorrow at 10:00 AM"
                   }
                 }
-                """.formatted(userName, userEmail, userEmail, userEmail, userName, userEmail, userEmail, userEmail);
+                """.formatted(userName, userEmail, userEmail, userEmail, userName, userEmail, userEmail, userName, userName, userEmail, userEmail);
     }
 }

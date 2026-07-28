@@ -73,6 +73,28 @@ public class ScheduledTaskWorker {
                     }
 
                     String subject = title.startsWith("Scheduled Email:") ? title.substring(16).trim() : "[Scheduled Automation] " + title;
+                    String body = desc;
+
+                    if (desc.contains("Subject: ")) {
+                        try {
+                            int sStart = desc.indexOf("Subject: ") + 9;
+                            int sEnd = desc.indexOf("\n", sStart);
+                            if (sEnd > sStart) {
+                                String parsedSubject = desc.substring(sStart, sEnd).trim();
+                                if (!parsedSubject.isBlank()) {
+                                    subject = parsedSubject;
+                                }
+                            }
+                        } catch (Exception ignored) {}
+                    }
+
+                    if (desc.contains("Body: ")) {
+                        body = desc.substring(desc.indexOf("Body: ") + 6).trim();
+                    } else if (desc.contains("Recipient: ") && desc.contains("\n\n")) {
+                        body = desc.substring(desc.indexOf("\n\n") + 2).trim();
+                    }
+
+                    if (body.isBlank()) body = "This is a scheduled automated reminder for: " + title;
 
                     if (isReportTask) {
                         String reportType = "Periodic";
@@ -84,10 +106,7 @@ public class ScheduledTaskWorker {
                         log.info("Executing scheduled HTML report email for task '{}' to recipient '{}'...", title, recipient);
                         emailService.sendHtmlEmail(user, recipient, reportType + " Activity & Performance Report", htmlContent);
                     } else {
-                        String body = desc.contains("Body: ") ? desc.substring(desc.indexOf("Body: ") + 6).trim() : desc;
-                        if (body.isBlank()) body = "This is a scheduled automated reminder for: " + title;
-
-                        log.info("Executing scheduled email for task '{}' to recipient '{}'...", title, recipient);
+                        log.info("Executing scheduled email for task '{}' (Subject: '{}') to recipient '{}'...", title, subject, recipient);
                         emailService.sendEmail(user, recipient, subject, body);
                     }
                 }
