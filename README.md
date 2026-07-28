@@ -1,8 +1,9 @@
 # AI Automation Assistant Platform
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ai.m7snv2017.com-3b82f6?style=for-the-badge&logo=cloudflare)](https://ai.m7snv2017.com)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-6DB33F?style=for-the-badge&logo=springboot)](https://spring.io/projects/spring-boot)
 [![Ollama](https://img.shields.io/badge/Ollama-Local%20AI-000000?style=for-the-badge&logo=ollama)](https://ollama.ai/)
+
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.3.5-6DB33F?style=for-the-badge&logo=springboot)](https://spring.io/projects/spring-boot)
 [![Docker](https://img.shields.io/badge/Docker-Containers-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
 
 > **Try it Live**: Visit [https://ai.m7snv2017.com](https://ai.m7snv2017.com) to experience the AI Automation Assistant platform live in production.
