@@ -43,6 +43,24 @@ Instead of acting like a passive chatbot, the agent acts as an **Action Executiv
 
 ---
 
+## Quick Start & Setup
+
+### Prerequisites
+- [Docker & Docker Compose](https://www.docker.com/) installed.
+- [Ollama](https://ollama.ai/) running locally (`ollama run qwen2.5-coder:14b`).
+
+### Build & Launch Containers
+```bash
+docker compose up --build -d
+```
+
+### Access Application
+Open your browser and navigate to:
+- **Local Application**: `http://localhost:8080`
+- **Live Production URL**: [https://ai.m7snv2017.com](https://ai.m7snv2017.com)
+
+---
+
 ## Security & Privacy
 
 - **Local LLM Execution**: AI processing is executed on-premise/locally via Ollama, keeping sensitive documents and CV data private.
