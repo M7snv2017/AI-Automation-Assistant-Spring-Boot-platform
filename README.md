@@ -35,6 +35,7 @@
 - **Visual Calendar & Agenda (`/calendar`)**: Color-coded category event calendar with threshold count badges and daily agendas.
 - **Task & Automation Manager (`/tasks`)**: Task tracking with recurrence patterns, priority filters, and advance reminders.
 - **Automation Execution History (`/history`)**: Audit logs and execution records for all AI actions and scheduled tasks.
+- **User Profile (`/profile`)**: Manage personal account details, security credentials, and user preferences.
 - **Platform Settings (`/settings`)**: Configuration for Gmail SMTP credentials, local Ollama AI model selection, and user profiles.
 
 ---
