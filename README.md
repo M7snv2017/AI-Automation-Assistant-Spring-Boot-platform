@@ -10,12 +10,12 @@
 ---
 
 ## Platform Preview & Screenshots
-
+### Dashboard
 ![Dashboard Overview](docs/screenshots/dashboard.png)
+### Chat
 ![AI Chat & Document Parsing](docs/screenshots/chat.png)
+### Calendar
 ![Visual Calendar & Agenda](docs/screenshots/calendar.png)
-
-*Place your screenshot image files inside the `docs/screenshots/` folder to display them above.*
 
 ---
 
