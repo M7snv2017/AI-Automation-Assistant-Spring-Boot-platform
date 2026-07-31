@@ -11,6 +11,8 @@
 ---
 
 ## Platform Preview & Screenshots
+### index
+![Index Overview](docs/screenshots/index.png)
 ### Dashboard
 ![Dashboard Overview](docs/screenshots/dashboard.png)
 ### Chat
