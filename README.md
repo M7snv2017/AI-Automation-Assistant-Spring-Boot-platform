@@ -11,7 +11,7 @@
 ---
 
 ## Platform Preview & Screenshots
-### index
+### Index
 ![Index Overview](docs/screenshots/index.png)
 ### Dashboard
 ![Dashboard Overview](docs/screenshots/dashboard.png)
